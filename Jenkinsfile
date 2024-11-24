@@ -8,8 +8,9 @@ pipeline {
     }
     
     environment {
-        DOCKER_REGISTRY = 'crypticseeds/ecommerce-microservices'
-        VERSION = "${BUILD_NUMBER}"
+        DOCKER_REGISTRY = 'crypticseeds'
+        MAJOR_VERSION = 'v1.0'
+        VERSION = "${MAJOR_VERSION}.${BUILD_NUMBER}"
         SONAR_SCANNER_HOME = tool 'sonar-scanner'
     }
     
@@ -50,7 +51,11 @@ pipeline {
                             sh 'mvn clean package -DskipTests'
                             script {
                                 withDockerRegistry(credentialsId: 'docker-cred') {
-                                    sh "docker build -t ${DOCKER_REGISTRY}/discovery-server:${VERSION} ."
+                                    def imageName = "${DOCKER_REGISTRY}/ecommerce-microservices-discovery-server"
+                                    sh """
+                                        docker build -t ${imageName}:${VERSION} .
+                                        docker tag ${imageName}:${VERSION} ${imageName}:latest
+                                    """
                                 }
                             }
                         }
@@ -63,7 +68,11 @@ pipeline {
                             sh 'mvn clean package -DskipTests'
                             script {
                                 withDockerRegistry(credentialsId: 'docker-cred') {
-                                    sh "docker build -t ${DOCKER_REGISTRY}/api-gateway:${VERSION} ."
+                                    def imageName = "${DOCKER_REGISTRY}/ecommerce-microservices-api-gateway"
+                                    sh """
+                                        docker build -t ${imageName}:${VERSION} .
+                                        docker tag ${imageName}:${VERSION} ${imageName}:latest
+                                    """
                                 }
                             }
                         }
@@ -73,10 +82,14 @@ pipeline {
                 stage('Build Inventory Service') {
                     steps {
                         dir('inventory-service') {
-                            sh 'mvn clean install'
+                            sh 'mvn clean package -DskipTests'
                             script {
                                 withDockerRegistry(credentialsId: 'docker-cred') {
-                                    sh "docker build -t ${DOCKER_REGISTRY}/inventory-service:${VERSION} ."
+                                    def imageName = "${DOCKER_REGISTRY}/ecommerce-microservices-inventory-service"
+                                    sh """
+                                        docker build -t ${imageName}:${VERSION} .
+                                        docker tag ${imageName}:${VERSION} ${imageName}:latest
+                                    """
                                 }
                             }
                         }
@@ -86,10 +99,14 @@ pipeline {
                 stage('Build Order Service') {
                     steps {
                         dir('order-service') {
-                            sh 'mvn clean install'
+                            sh 'mvn clean package -DskipTests'
                             script {
                                 withDockerRegistry(credentialsId: 'docker-cred') {
-                                    sh "docker build -t ${DOCKER_REGISTRY}/order-service:${VERSION} ."
+                                    def imageName = "${DOCKER_REGISTRY}/ecommerce-microservices-order-service"
+                                    sh """
+                                        docker build -t ${imageName}:${VERSION} .
+                                        docker tag ${imageName}:${VERSION} ${imageName}:latest
+                                    """
                                 }
                             }
                         }
@@ -102,7 +119,11 @@ pipeline {
                             sh 'mvn clean install'
                             script {
                                 withDockerRegistry(credentialsId: 'docker-cred') {
-                                    sh "docker build -t ${DOCKER_REGISTRY}/product-service:${VERSION} ."
+                                    def imageName = "${DOCKER_REGISTRY}/ecommerce-microservices-product-service"
+                                    sh """
+                                        docker build -t ${imageName}:${VERSION} .
+                                        docker tag ${imageName}:${VERSION} ${imageName}:latest
+                                    """
                                 }
                             }
                         }
@@ -115,7 +136,11 @@ pipeline {
                             sh 'mvn clean package -DskipTests'
                             script {
                                 withDockerRegistry(credentialsId: 'docker-cred') {
-                                    sh "docker build -t ${DOCKER_REGISTRY}/notification-service:${VERSION} ."
+                                    def imageName = "${DOCKER_REGISTRY}/ecommerce-microservices-notification-service"
+                                    sh """
+                                        docker build -t ${imageName}:${VERSION} .
+                                        docker tag ${imageName}:${VERSION} ${imageName}:latest
+                                    """
                                 }
                             }
                         }
@@ -128,32 +153,61 @@ pipeline {
             parallel {
                 stage('Scan Discovery Server') {
                     steps {
-                        sh "trivy image --format table --scanners vuln -o discovery-server-scan.html ${DOCKER_REGISTRY}/discovery-server:${VERSION}"
+                        sh """
+                            trivy image --no-progress --format table \
+                            -o discovery-server-scan.html \
+                            ${DOCKER_REGISTRY}/ecommerce-microservices-discovery-server:${VERSION}
+                        """
                     }
                 }
+                
                 stage('Scan API Gateway') {
                     steps {
-                        sh "trivy image --format table --scanners vuln -o api-gateway-scan.html ${DOCKER_REGISTRY}/api-gateway:${VERSION}"
+                        sh """
+                            trivy image --no-progress --format table \
+                            -o api-gateway-scan.html \
+                            ${DOCKER_REGISTRY}/ecommerce-microservices-api-gateway:${VERSION}
+                        """
                     }
                 }
+                
                 stage('Scan Inventory Service') {
                     steps {
-                        sh "trivy image --format table --scanners vuln -o inventory-service-scan.html ${DOCKER_REGISTRY}/inventory-service:${VERSION}"
+                        sh """
+                            trivy image --no-progress --format table \
+                            -o inventory-service-scan.html \
+                            ${DOCKER_REGISTRY}/ecommerce-microservices-inventory-service:${VERSION}
+                        """
                     }
                 }
+                
                 stage('Scan Order Service') {
                     steps {
-                        sh "trivy image --format table --scanners vuln -o order-service-scan.html ${DOCKER_REGISTRY}/order-service:${VERSION}"
+                        sh """
+                            trivy image --no-progress --format table \
+                            -o order-service-scan.html \
+                            ${DOCKER_REGISTRY}/ecommerce-microservices-order-service:${VERSION}
+                        """
                     }
                 }
+                
                 stage('Scan Product Service') {
                     steps {
-                        sh "trivy image --format table --scanners vuln -o product-service-scan.html ${DOCKER_REGISTRY}/product-service:${VERSION}"
+                        sh """
+                            trivy image --no-progress --format table \
+                            -o product-service-scan.html \
+                            ${DOCKER_REGISTRY}/ecommerce-microservices-product-service:${VERSION}
+                        """
                     }
                 }
+                
                 stage('Scan Notification Service') {
                     steps {
-                        sh "trivy image --format table --scanners vuln -o notification-service-scan.html ${DOCKER_REGISTRY}/notification-service:${VERSION}"
+                        sh """
+                            trivy image --no-progress --format table \
+                            -o notification-service-scan.html \
+                            ${DOCKER_REGISTRY}/ecommerce-microservices-notification-service:${VERSION}
+                        """
                     }
                 }
             }
@@ -163,12 +217,47 @@ pipeline {
             steps {
                 script {
                     withDockerRegistry(credentialsId: 'docker-cred') {
-                        sh "docker push ${DOCKER_REGISTRY}/discovery-server:${VERSION}"
-                        sh "docker push ${DOCKER_REGISTRY}/api-gateway:${VERSION}"
-                        sh "docker push ${DOCKER_REGISTRY}/inventory-service:${VERSION}"
-                        sh "docker push ${DOCKER_REGISTRY}/order-service:${VERSION}"
-                        sh "docker push ${DOCKER_REGISTRY}/product-service:${VERSION}"
-                        sh "docker push ${DOCKER_REGISTRY}/notification-service:${VERSION}"
+                        // Discovery Server
+                        def discoveryServer = "${DOCKER_REGISTRY}/ecommerce-microservices-discovery-server"
+                        sh """
+                            docker push ${discoveryServer}:${VERSION}
+                            docker push ${discoveryServer}:latest
+                        """
+
+                        // API Gateway
+                        def apiGateway = "${DOCKER_REGISTRY}/ecommerce-microservices-api-gateway"
+                        sh """
+                            docker push ${apiGateway}:${VERSION}
+                            docker push ${apiGateway}:latest
+                        """
+
+                        // Inventory Service
+                        def inventoryService = "${DOCKER_REGISTRY}/ecommerce-microservices-inventory-service"
+                        sh """
+                            docker push ${inventoryService}:${VERSION}
+                            docker push ${inventoryService}:latest
+                        """
+
+                        // Order Service
+                        def orderService = "${DOCKER_REGISTRY}/ecommerce-microservices-order-service"
+                        sh """
+                            docker push ${orderService}:${VERSION}
+                            docker push ${orderService}:latest
+                        """
+
+                        // Product Service
+                        def productService = "${DOCKER_REGISTRY}/ecommerce-microservices-product-service"
+                        sh """
+                            docker push ${productService}:${VERSION}
+                            docker push ${productService}:latest
+                        """
+
+                        // Notification Service
+                        def notificationService = "${DOCKER_REGISTRY}/ecommerce-microservices-notification-service"
+                        sh """
+                            docker push ${notificationService}:${VERSION}
+                            docker push ${notificationService}:latest
+                        """
                     }
                 }
             }
@@ -177,6 +266,13 @@ pipeline {
 
     post {
         always {
+            sh '''
+                # Clean up docker images to free space
+                docker system prune -f
+                
+                # Clean only the workspace Trivy cache
+                rm -rf ${WORKSPACE}/.trivycache/
+            '''
             archiveArtifacts artifacts: '**/*-scan.html', allowEmptyArchive: true
             cleanWs()
         }
