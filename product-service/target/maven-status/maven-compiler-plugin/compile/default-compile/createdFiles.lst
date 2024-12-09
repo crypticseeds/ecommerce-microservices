@@ -1,0 +1,10 @@
+com/crypticseeds/productservice/dto/ProductRequest$ProductRequestBuilder.class
+com/crypticseeds/productservice/dto/ProductResponse.class
+com/crypticseeds/productservice/service/ProductService.class
+com/crypticseeds/productservice/controller/ProductController.class
+com/crypticseeds/productservice/dto/ProductResponse$ProductResponseBuilder.class
+com/crypticseeds/productservice/repository/ProductRepository.class
+com/crypticseeds/productservice/ProductServiceApplication.class
+com/crypticseeds/productservice/model/Product$ProductBuilder.class
+com/crypticseeds/productservice/model/Product.class
+com/crypticseeds/productservice/dto/ProductRequest.class

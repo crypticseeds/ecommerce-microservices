@@ -195,6 +195,20 @@ With a focus on scalability, resilience, and real-time interaction, Micro Market
   - Go to the Client `spring-cloud-client`
   - Go the the 'Credentials' section, and get the 'Client Secret'
 
+NOTE: For getting the access token from the keycloak container within the local machine, it is required to add a row with `127.0.0.1 keycloak` in the file: `C:\Windows\System32\drivers\etc\hosts` or `/etc/hosts` 
+
+#### Local Keycloak Access Token Setup
+
+To retrieve the access token from the Keycloak container locally, add the following entry to your system's `hosts` file:
+
+- **Windows**: `C:\Windows\System32\drivers\etc\hosts`  
+- **Linux/Mac**: `/etc/hosts`
+
+```
+127.0.0.1 keycloak
+```
+Note: This step is essential for enabling the local Keycloak instance to resolve correctly when accessing it via 127.0.0.1.
+
 
 - **Setup Postman Authentication** [Required in the next steps]
   - On the Request page, set Authorization:
@@ -207,7 +221,14 @@ With a focus on scalability, resilience, and real-time interaction, Micro Market
       - Client Secret: `<client-secret>` (which you copied in the last step from KeyCloak)
     - Click on "Get New Access Token" and then click "Use Token"
 
-    > NOTE: For getting the access token from the keycloak container with the local machine, it is required to add a row with `127.0.0.1 keycloak` in the file: `C:\Windows\System32\drivers\etc\hosts` or `/etc/hosts`  
+    Alternatively, you can use the following command to get the access token:
+    ```shell
+    curl -X POST "http://keycloak:8080/realms/spring-boot-microservices-realm/protocol/openid-connect/token" \
+    -H "Content-Type: application/x-www-form-urlencoded" \
+    -d "grant_type=client_credentials" \
+    -d "client_id=spring-cloud-client" \
+    -d "client_secret=<client-secret>"
+    ```
 
 - **Accessing API Endpoints**
   - **POST /api/product**
@@ -217,10 +238,10 @@ With a focus on scalability, resilience, and real-time interaction, Micro Market
     - Body: 
       ```json
       {
-         "name": "Iphone 15",
-         "description": "Apple Iphone 15",
-         "price": 1500
-      } 
+          "name": "Test Product",
+          "description": "Test Description",
+          "price": 100
+      }
       ```
     - Output:
         ![Postman](docs/images/outputs/product_api_post_postman.png)
@@ -242,8 +263,8 @@ With a focus on scalability, resilience, and real-time interaction, Micro Market
       {
          "orderLineItemsDtoList": [
            {
-              "skuCode": "iphone_15_pro",
-              "price": 2000,
+              "skuCode": "iphone_16",
+              "price": 1100,
               "quantity": 1
             }
          ]
@@ -252,7 +273,6 @@ With a focus on scalability, resilience, and real-time interaction, Micro Market
     - Output:
       ![Postman](docs/images/outputs/order_api_post_postman.png)
       ![Zipkin](docs/images/outputs/order_api_post_zipkin.png)
-      ![Notification Service Logs](docs/images/outputs/order_api_post_notification_service_docker_logs.png)
 
 ### Components UI
 
@@ -280,19 +300,12 @@ With a focus on scalability, resilience, and real-time interaction, Micro Market
       ![Graph Query](docs/images/outputs/prometheus_graph.png)
     - Prometheus Targets Health
       ![Targets Health](docs/images/outputs/prometheus_targets.png)
-    - Prometheus Service Discovery Status
-      ![Service Discovery Status](docs/images/outputs/prometheus_service_discovery.png)
 
 - Grafana Dashboard
   - Grafana Dashboard can be accessed on http://localhost:3000/
   - To visualize the application, create a 'Data Source' and import the dashboard using `grafana-dashboard.json` file.
-  - Data Source
-    ![Data Source](docs/images/outputs/grafana_data_source.png)
-  - Dashboard [Collapsed]
-    ![Dashboard Collapsed](docs/images/outputs/grafana_dashboard_collapsed.png)
   - Dashboard
-    ![Dashboard-1](docs/images/outputs/grafana_dashboard_pg1.png)
-    ![Dashboard-5](docs/images/outputs/grafana_dashboard_pg5.png)
+    ![Dashboard-1](docs/images/outputs/grafana_dashboard.png)
 
 
 ## Environment Cleanup

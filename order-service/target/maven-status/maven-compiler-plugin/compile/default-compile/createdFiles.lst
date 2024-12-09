@@ -1,0 +1,12 @@
+com/crypticseeds/orderservice/event/OrderPlacedEvent.class
+com/crypticseeds/orderservice/dto/OrderLineItemsDto.class
+com/crypticseeds/orderservice/OrderServiceApplication.class
+com/crypticseeds/orderservice/controller/OrderController.class
+com/crypticseeds/orderservice/service/OrderService.class
+com/crypticseeds/orderservice/model/OrderLineItems.class
+com/crypticseeds/orderservice/dto/InventoryResponse$InventoryResponseBuilder.class
+com/crypticseeds/orderservice/model/Order.class
+com/crypticseeds/orderservice/repository/OrderRepository.class
+com/crypticseeds/orderservice/dto/InventoryResponse.class
+com/crypticseeds/orderservice/dto/OrderRequest.class
+com/crypticseeds/orderservice/config/WebClientConfig.class

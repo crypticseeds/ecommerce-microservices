@@ -1,0 +1,7 @@
+com/crypticseeds/inventoryservice/controller/InventoryController.class
+com/crypticseeds/inventoryservice/model/Inventory.class
+com/crypticseeds/inventoryservice/InventoryServiceApplication.class
+com/crypticseeds/inventoryservice/service/InventoryService.class
+com/crypticseeds/inventoryservice/dto/InventoryResponse.class
+com/crypticseeds/inventoryservice/dto/InventoryResponse$InventoryResponseBuilder.class
+com/crypticseeds/inventoryservice/repository/InventoryRepository.class

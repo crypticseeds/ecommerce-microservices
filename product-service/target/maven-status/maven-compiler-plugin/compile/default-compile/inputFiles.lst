@@ -1,0 +1,7 @@
+/home/femi/ecommerce-microservices/product-service/src/main/java/com/crypticseeds/productservice/service/ProductService.java
+/home/femi/ecommerce-microservices/product-service/src/main/java/com/crypticseeds/productservice/controller/ProductController.java
+/home/femi/ecommerce-microservices/product-service/src/main/java/com/crypticseeds/productservice/repository/ProductRepository.java
+/home/femi/ecommerce-microservices/product-service/src/main/java/com/crypticseeds/productservice/model/Product.java
+/home/femi/ecommerce-microservices/product-service/src/main/java/com/crypticseeds/productservice/dto/ProductRequest.java
+/home/femi/ecommerce-microservices/product-service/src/main/java/com/crypticseeds/productservice/ProductServiceApplication.java
+/home/femi/ecommerce-microservices/product-service/src/main/java/com/crypticseeds/productservice/dto/ProductResponse.java

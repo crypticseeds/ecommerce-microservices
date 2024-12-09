@@ -1,0 +1,11 @@
+/home/femi/ecommerce-microservices/order-service/src/main/java/com/crypticseeds/orderservice/event/OrderPlacedEvent.java
+/home/femi/ecommerce-microservices/order-service/src/main/java/com/crypticseeds/orderservice/controller/OrderController.java
+/home/femi/ecommerce-microservices/order-service/src/main/java/com/crypticseeds/orderservice/OrderServiceApplication.java
+/home/femi/ecommerce-microservices/order-service/src/main/java/com/crypticseeds/orderservice/model/Order.java
+/home/femi/ecommerce-microservices/order-service/src/main/java/com/crypticseeds/orderservice/dto/InventoryResponse.java
+/home/femi/ecommerce-microservices/order-service/src/main/java/com/crypticseeds/orderservice/dto/OrderRequest.java
+/home/femi/ecommerce-microservices/order-service/src/main/java/com/crypticseeds/orderservice/model/OrderLineItems.java
+/home/femi/ecommerce-microservices/order-service/src/main/java/com/crypticseeds/orderservice/service/OrderService.java
+/home/femi/ecommerce-microservices/order-service/src/main/java/com/crypticseeds/orderservice/config/WebClientConfig.java
+/home/femi/ecommerce-microservices/order-service/src/main/java/com/crypticseeds/orderservice/repository/OrderRepository.java
+/home/femi/ecommerce-microservices/order-service/src/main/java/com/crypticseeds/orderservice/dto/OrderLineItemsDto.java

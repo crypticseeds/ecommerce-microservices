@@ -1,0 +1,6 @@
+/home/femi/ecommerce-microservices/inventory-service/src/main/java/com/crypticseeds/inventoryservice/service/InventoryService.java
+/home/femi/ecommerce-microservices/inventory-service/src/main/java/com/crypticseeds/inventoryservice/dto/InventoryResponse.java
+/home/femi/ecommerce-microservices/inventory-service/src/main/java/com/crypticseeds/inventoryservice/model/Inventory.java
+/home/femi/ecommerce-microservices/inventory-service/src/main/java/com/crypticseeds/inventoryservice/controller/InventoryController.java
+/home/femi/ecommerce-microservices/inventory-service/src/main/java/com/crypticseeds/inventoryservice/InventoryServiceApplication.java
+/home/femi/ecommerce-microservices/inventory-service/src/main/java/com/crypticseeds/inventoryservice/repository/InventoryRepository.java

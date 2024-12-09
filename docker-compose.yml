@@ -8,7 +8,7 @@ services:
     environment:
       MYSQL_ROOT_PASSWORD: root
       MYSQL_DATABASE: order_service
-      MYSQL_USER: ibatulanand
+      MYSQL_USER: crypticseeds
       MYSQL_PASSWORD: password
     volumes:
       - ./mysql_order:/var/lib/mysql
@@ -23,7 +23,7 @@ services:
     environment:
       MYSQL_ROOT_PASSWORD: root
       MYSQL_DATABASE: inventory_service
-      MYSQL_USER: ibatulanand
+      MYSQL_USER: crypticseeds
       MYSQL_PASSWORD: password
     volumes:
       - ./mysql_inventory:/var/lib/mysql
@@ -105,41 +105,30 @@ services:
       KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
 
 
-  # Jaeger Config
-  jaeger:
-    image: jaegertracing/all-in-one:latest
-    container_name: jaeger
+  # Zipkin Config
+  zipkin:
+    image: openzipkin/zipkin
+    container_name: zipkin
     ports:
-      - "5775:5775/udp"
-      - "6831:6831/udp"
-      - "6832:6832/udp"
-      - "5778:5778"
-      - "16686:16686"
-      - "14250:14250"
-      - "14268:14268"
-      - "14269:14269"
-    environment:
-      - COLLECTOR_OTLP_ENABLED=true
-      - COLLECTOR_ZIPKIN_HOST_PORT=:9411
+      - "9411:9411"
 
 
   # Discovery Server (Eureka Server) Config
   discovery-server:
-    image: crypticseeds/ecommerce-microservices/discovery-server:latest
+    image: crypticseeds/ecommerce-microservices-discovery-server:latest
     container_name: discovery-server
     pull_policy: always
     ports:
       - "8761:8761"
     environment:
       - SERVER_PORT=8761
-      - OTEL_EXPORTER_JAEGER_ENDPOINT=http://jaeger:14250
-      - OTEL_TRACES_EXPORTER=jaeger
+      - MANAGEMENT_ZIPKIN_TRACING_ENDPOINT=http://zipkin:9411/api/v2/spans
     depends_on:
-      - jaeger
+      - zipkin
 
   # API Gateway Service Config
   api-gateway:
-    image: crypticseeds/ecommerce-microservices/api-gateway:latest
+    image: crypticseeds/ecommerce-microservices-api-gateway:latest
     container_name: api-gateway
     pull_policy: always
     ports:
@@ -151,92 +140,81 @@ services:
       - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://discovery-server:8761/eureka
       - SERVER_PORT=8080
       - SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUERURI=http://keycloak:8080/realms/spring-boot-microservices-realm
-      - OTEL_EXPORTER_JAEGER_ENDPOINT=http://jaeger:14250
-      - OTEL_TRACES_EXPORTER=jaeger
+      - MANAGEMENT_ZIPKIN_TRACING_ENDPOINT=http://zipkin:9411/api/v2/spans
     depends_on:
+      - zipkin
       - discovery-server
-      - jaeger
+      - keycloak
 
   # Product Service Config
   product-service:
     container_name: product-service
-    image: crypticseeds/ecommerce-microservices/product-service:latest
+    image: crypticseeds/ecommerce-microservices-product-service:latest
     pull_policy: always
     environment:
       - SPRING_DATA_MONGODB_URI=mongodb://mongo:27017/product-service
       - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://discovery-server:8761/eureka/
       - SERVER_PORT=8080
-      - OTEL_EXPORTER_JAEGER_ENDPOINT=http://jaeger:14250
-      - OTEL_TRACES_EXPORTER=jaeger
+      - MANAGEMENT_ZIPKIN_TRACING_ENDPOINT=http://zipkin:9411/api/v2/spans
     depends_on:
       - mongo
+      - zipkin
       - discovery-server
       - api-gateway
-      - jaeger
 
   # Order Service Config
   order-service:
     container_name: order-service
-    image: crypticseeds/ecommerce-microservices/order-service:latest
+    image: crypticseeds/ecommerce-microservices-order-service:latest
     pull_policy: always
     environment:
       - SPRING_DATASOURCE_URL=jdbc:mysql://mysql-order:3306/order_service?allowPublicKeyRetrieval=true&useSSL=false
-      - SPRING_DATASOURCE_USERNAME=ibatulanand
+      - SPRING_DATASOURCE_USERNAME=crypticseeds
       - SPRING_DATASOURCE_PASSWORD=password
       - SERVER_PORT=8080
       - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://discovery-server:8761/eureka/
       - MANAGEMENT_ZIPKIN_TRACING_ENDPOINT=http://zipkin:9411/api/v2/spans
       - SPRING_KAFKA_BOOTSTRAPSERVERS=broker:29092
-      - OTEL_EXPORTER_JAEGER_ENDPOINT=http://jaeger:14250
-      - OTEL_TRACES_EXPORTER=jaeger
     depends_on:
       - mysql-order
       - broker
-      - jaeger
+      - zipkin
       - discovery-server
       - api-gateway
-
 
   # Inventory Service Config
   inventory-service:
     container_name: inventory-service
-    image: crypticseeds/ecommerce-microservices/inventory-service:latest
+    image: crypticseeds/ecommerce-microservices-inventory-service:latest
     pull_policy: always
     environment:
       - SPRING_DATASOURCE_URL=jdbc:mysql://mysql-inventory:3306/inventory_service?allowPublicKeyRetrieval=true&useSSL=false
-      - SPRING_DATASOURCE_USERNAME=ibatulanand
+      - SPRING_DATASOURCE_USERNAME=crypticseeds
       - SPRING_DATASOURCE_PASSWORD=password
       - SERVER_PORT=8080
       - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://discovery-server:8761/eureka/
       - MANAGEMENT_ZIPKIN_TRACING_ENDPOINT=http://zipkin:9411/api/v2/spans
-      - OTEL_EXPORTER_JAEGER_ENDPOINT=http://jaeger:14250
-      - OTEL_TRACES_EXPORTER=jaeger
     depends_on:
       - mysql-inventory
-      - broker
-      - jaeger
+      - zipkin
       - discovery-server
       - api-gateway
-
 
   # Notification Service Config
   notification-service:
     container_name: notification-service
-    image: crypticseeds/ecommerce-microservices/notification-service:latest
+    image: crypticseeds/ecommerce-microservices-notification-service:latest
     pull_policy: always
     environment:
       - SERVER_PORT=8080
       - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://discovery-server:8761/eureka
       - MANAGEMENT_ZIPKIN_TRACING_ENDPOINT=http://zipkin:9411/api/v2/spans
       - SPRING_KAFKA_BOOTSTRAP_SERVERS=broker:29092
-      - OTEL_EXPORTER_JAEGER_ENDPOINT=http://jaeger:14250
-      - OTEL_TRACES_EXPORTER=jaeger
     depends_on:
       - broker
-      - jaeger
+      - zipkin
       - discovery-server
       - api-gateway
-
 
   # Prometheus Config
   prometheus:
@@ -258,6 +236,7 @@ services:
     container_name: grafana
     image: grafana/grafana-oss:latest
     restart: always
+    user: "472:472"
     ports:
       - "3000:3000"
     links:
